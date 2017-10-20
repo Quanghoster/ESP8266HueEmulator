@@ -44,7 +44,7 @@ extern "C" {
 #include "lwip/mem.h"
 #include "include/UdpContext.h"
 
-#define DEBUG_SSDP  Serial
+//#define DEBUG_SSDP  Serial
 
 #define SSDP_INTERVAL     1200
 #define SSDP_PORT         1900
@@ -136,7 +136,7 @@ _notify_time(0)
 {
   _uuid[0] = '\0';
   _modelNumber[0] = '\0';
-  sprintf(_deviceType, "urn:schemas-upnp-org:device:basic:1");
+  sprintf(_deviceType, "urn:schemas-upnp-org:device:Basic:1");
   _friendlyName[0] = '\0';
   _presentationURL[0] = '\0';
   _serialNumber[0] = '\0';
