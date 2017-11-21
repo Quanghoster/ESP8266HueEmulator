@@ -2,11 +2,8 @@ language: c
 sudo: false
 notifications: false
 before_install:
-  - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
+  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/3d515cba13e7452604c301de16a13b00/raw/6f773c9e70c8019d4884dc420773439bb6357fe7/arduino_and_esp8266_from_github_install.sh)
 install:
-  - mkdir -p $HOME/arduino_ide/hardware/
-  - cd $HOME/arduino_ide/hardware/
-  - git clone https://github.com/esp8266/Arduino.git esp8266
   - mkdir -p $HOME/arduino_ide/libraries/
   - cd $HOME/arduino_ide/libraries/
   - git clone --branch 2.1.4 https://github.com/Makuna/NeoPixelBus.git
