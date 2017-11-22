@@ -2,7 +2,7 @@ language: c
 sudo: false
 notifications: false
 before_install:
-  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/3d515cba13e7452604c301de16a13b00/raw/e263c1cdf1c4f2b170566d8eebdbf1e50ad3486a/arduino_and_esp8266_from_github_install.sh)
+  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/3d515cba13e7452604c301de16a13b00/raw/7151aec8613c96dbf927455af1d4b51ad79e226d/arduino_and_esp8266_from_github_install.sh)
 install:
   - mkdir -p $HOME/arduino_ide/libraries/
   - cd $HOME/arduino_ide/libraries/
