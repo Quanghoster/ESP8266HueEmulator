@@ -2,7 +2,7 @@ language: c
 sudo: false
 notifications: false
 before_install:
-  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/3d515cba13e7452604c301de16a13b00/raw/7151aec8613c96dbf927455af1d4b51ad79e226d/arduino_and_esp8266_from_github_install.sh)
+  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/3d515cba13e7452604c301de16a13b00/raw/48a81e6801dc24b3b1ea5b018a9a58932b41ce71/arduino_and_esp8266_from_github_install.sh)
 install:
   - mkdir -p $HOME/arduino_ide/libraries/
   - cd $HOME/arduino_ide/libraries/
@@ -13,6 +13,6 @@ install:
   - sed -i -e 's|#define PRINT_BUFFER_LEN 256|#define PRINT_BUFFER_LEN 4096|g'  aJson/aJSON.h
   - cd -
 script:
- # - sed -i -e 's|#include "/secrets.h"|//#include "/secrets.h"|g' ESP8266HueEmulator/ESP8266HueEmulator.ino
- # - sed -i -e 's|//const char|const char|g' ESP8266HueEmulator/ESP8266HueEmulator.ino
+  - sed -i -e 's|#include "/secrets.h"|//#include "/secrets.h"|g' ESP8266HueEmulator/ESP8266HueEmulator.ino
+  - sed -i -e 's|//const char|const char|g' ESP8266HueEmulator/ESP8266HueEmulator.ino
   - build_platform esp8266
