@@ -2,7 +2,7 @@ language: c
 sudo: false
 notifications: false
 before_install:
-  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/781b5e6f6394419754fca695f97b7144/raw/d1317138063200d01868dde6c00488e8c54c06ef/hue-esp8266-build.sh)
+  - source <(curl -SLs https://raw.githubusercontent.com/adafruit/travis-ci-arduino/master/install.sh)
 install:
   - mkdir -p $HOME/arduino_ide/libraries/
   - cd $HOME/arduino_ide/libraries/
