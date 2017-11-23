@@ -2,4 +2,18 @@ language: c
 sudo: false
 notifications: false
 before_install:
-  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/72129db5863425ae7ffdc99a54aa53a5/raw/8ca3a67ffb12bf4d3ab5fcd5ba9d0f6a68420a18/hue-esp8266-build.sh)
+  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/781b5e6f6394419754fca695f97b7144/raw/0ea36cb52f8b63a5aad9bbbd2591c80087a9bf41/hue-esp8266-build.sh)
+install:
+  - mkdir -p $HOME/arduino_ide/libraries/
+  - cd $HOME/arduino_ide/libraries/
+  - git clone --branch 2.1.4 https://github.com/Makuna/NeoPixelBus.git
+  - git clone https://github.com/interactive-matter/aJson.git
+  - git clone https://github.com/PaulStoffregen/Time.git
+  - git clone https://github.com/gmag11/NtpClient.git
+  - sed -i -e 's|#define PRINT_BUFFER_LEN 256|#define PRINT_BUFFER_LEN 4096|g'  aJson/aJSON.h
+  - cd -
+script:
+  - sed -i -e 's|#include "/secrets.h"|//#include "/secrets.h"|g' ESP8266HueEmulator/ESP8266HueEmulator.ino
+  - sed -i -e 's|//const char|const char|g' ESP8266HueEmulator/ESP8266HueEmulator.ino
+  - build_platform esp8266
+
