@@ -740,7 +740,7 @@ void lightsFn(WcFnRequestHandler *handler, String requestUri, HTTPMethod method)
   }
 }
 
-void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler);
+void addSingleLightJson(aJsonObject* light, int numberOfTheLight, LightHandler *lightHandler);
 void lightsIdFn(WcFnRequestHandler *whandler, String requestUri, HTTPMethod method) {
   int numberOfTheLight = atoi(whandler->getWildCard(1).c_str()) - 1;
   LightHandler *handler = LightService.getLightHandler(numberOfTheLight);
