@@ -2,7 +2,7 @@ language: c
 sudo: false
 notifications: false
 before_install:
-  - source <(curl -SLs https://gist.github.com/1e097169645314befd02aa9aef9b5849)
+  - source <(curl -SLs https://gist.githubusercontent.com/Quanghoster/1e097169645314befd02aa9aef9b5849/raw/74434041173c7d5844e44d1aa19a888c7e052026/hue-esp8266-build.sh)
 install:
   - mkdir -p $HOME/arduino_ide/libraries/
   - cd $HOME/arduino_ide/libraries/
