@@ -7,7 +7,7 @@
 #include "SSDP.h"
 #include <aJSON.h> // Replace avm/pgmspace.h with pgmspace.h there and set #define PRINT_BUFFER_LEN 4096 ################# IMPORTANT
 #include <assert.h>
-#include <fs.h>
+#include <FS.h>
 
 #if PRINT_BUFFER_LEN < 4096
 #  error aJson print buffer length PRINT_BUFFER_LEN must be increased to at least 4096
