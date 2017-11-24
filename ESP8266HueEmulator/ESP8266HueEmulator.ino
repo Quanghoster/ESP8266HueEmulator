@@ -2,9 +2,6 @@
  * Emulate Philips Hue Bridge ; so far the Hue app finds the emulated Bridge and gets its config
  * and switch NeoPixels with it
  **/
-#define INCLUDE_AWS
-
-
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -21,21 +18,9 @@
 #include "SSDP.h"
 #include <aJSON.h> // Replace avm/pgmspace.h with pgmspace.h there and set #define PRINT_BUFFER_LEN 4096 ################# IMPORTANT
 
-#include "secrets.h" // Delete this line and populate the following
+#include "/secrets.h" // Delete this line and populate the following
 //const char* ssid = "********";
 //const char* password = "********";
-
-//char* aws_region      = "eu-west-1";
-//char* aws_endpoint    = "xxxxxxxxx.iot.eu-west-1.amazonaws.com";
-//char* aws_key         = "xxxxxxxxxxxxxxx";
-//char* aws_secret      = "xxxxxxxxxxxxxxxxxxxxxxxxx";
-//const char* aws_topic  = "$aws/things/Hue_LightStrip1/shadow/update";
-
-#ifdef INCLUDE_AWS
-  #include "IOTServer.h"
-IOTServer iotServer(str_aws_region,str_aws_endpoint,str_aws_key,str_aws_secret,str_aws_topic);
-#endif
-
 
 RgbColor red = RgbColor(COLOR_SATURATION, 0, 0);
 RgbColor green = RgbColor(0, COLOR_SATURATION, 0);
@@ -43,11 +28,11 @@ RgbColor white = RgbColor(COLOR_SATURATION);
 RgbColor black = RgbColor(0);
 
 // Settings for the NeoPixels
-#define NUM_PIXELS_PER_LIGHT 25 // How many physical LEDs per emulated bulb
+#define NUM_PIXELS_PER_LIGHT 10 // How many physical LEDs per emulated bulb
 
-#define pixelCount 150
-#define pixelPin 2 // D4
-NeoPixelBus<NeoRbgFeature, NeoEsp8266Uart800KbpsMethod> strip(MAX_LIGHT_HANDLERS * NUM_PIXELS_PER_LIGHT, pixelPin);
+#define pixelCount 30
+#define pixelPin 2 // Strip is attached to GPIO2 on ESP-01
+NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(MAX_LIGHT_HANDLERS * NUM_PIXELS_PER_LIGHT, pixelPin);
 NeoPixelAnimator animator(MAX_LIGHT_HANDLERS * NUM_PIXELS_PER_LIGHT, NEO_MILLISECONDS); // NeoPixel animation management object
 
 HsbColor getHsb(int hue, int sat, int bri) {
@@ -127,7 +112,7 @@ class PixelHandler : public LightHandler {
 
     HueLightInfo getInfo(int lightNumber) { return _info; }
 };
-void infoLight(RgbColor color);
+
 void setup() {
 
   // this resets all the neopixels to an off state
@@ -185,7 +170,6 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off by making the voltage HIGH
 
   LightService.begin();
-  //iotServer.begin();
 
   // setup pixels as lights
   for (int i = 0; i < MAX_LIGHT_HANDLERS && i < pixelCount; i++) {
@@ -199,7 +183,6 @@ void setup() {
 }
 
 void loop() {
-  //iotServer.loop();
   ArduinoOTA.handle();
   
   LightService.update();
@@ -224,4 +207,3 @@ void infoLight(RgbColor color) {
     strip.Show();
   }
 }
-
