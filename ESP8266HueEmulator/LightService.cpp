@@ -195,8 +195,6 @@ protected:
     char _wildcard;
 };
 
-LightServiceClass LightService;
-
 LightHandler *lightHandlers[MAX_LIGHT_HANDLERS] = {}; // interfaces exposed to the outside world
 
 LightServiceClass::LightServiceClass() { }
@@ -272,7 +270,7 @@ static const char* _ssdp_xml_template = "<?xml version=\"1.0\" ?>"
   "<URLBase>http://{ip}:80/</URLBase>"
   "<device>"
     "<deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>"
-    "<friendlyName>Philips hue ( {ip} )</friendlyName>"
+    "<friendlyName>Philips hue ({ip})</friendlyName>"
     "<manufacturer>Royal Philips Electronics</manufacturer>"
     "<manufacturerURL>http://www.philips.com</manufacturerURL>"
     "<modelDescription>Philips hue Personal Wireless Lighting</modelDescription>"
@@ -282,7 +280,22 @@ static const char* _ssdp_xml_template = "<?xml version=\"1.0\" ?>"
     "<serialNumber>{mac}</serialNumber>"
     "<UDN>uuid:2f402f80-da50-11e1-9b23-{mac}</UDN>"
     "<presentationURL>index.html</presentationURL>"
-    //"<iconList><icon><mimetype>image/png</mimetype><height>48</height><width>48</width><depth>24</depth><url>hue_logo_0.png</url></icon><icon><mimetype>image/png</mimetype><height>120</height><width>120</width><depth>24</depth><url>hue_logo_3.png</url></icon></iconList>"
+    "<iconList>"
+    "  <icon>"
+    "    <mimetype>image/png</mimetype>"
+    "    <height>48</height>"
+    "    <width>48</width>"
+    "    <depth>24</depth>"
+    "    <url>hue_logo_0.png</url>"
+    "  </icon>"
+    "  <icon>"
+    "    <mimetype>image/png</mimetype>"
+    "    <height>120</height>"
+    "    <width>120</width>"
+    "    <depth>24</depth>"
+    "    <url>hue_logo_3.png</url>"
+    "  </icon>"
+    "</iconList>"
   "</device>"
   "</root>";
 
@@ -430,6 +443,29 @@ class LightGroup {
 
 void on(HandlerFunction fn, const String &wcUri, HTTPMethod method, char wildcard = '*') {
   HTTP->addHandler(new WcFnRequestHandler(fn, wcUri, method, wildcard));
+}
+
+void indexPageFn() {
+	String response = "<html><body>"
+	"<h2>Philips HUE ( {ip} )</h2>"
+	"<p>Available lights:</p>"
+	"<ul>{lights}</ul>"
+	"</body></html>";
+	
+	String lights = "";
+	
+	 for (int i = 0; i < LightService.getLightsAvailable(); i++) {
+	  if (!lightHandlers[i]) {
+		  continue;
+	  }
+	  	  
+	  lights += "<li>" + lightHandlers[i]->getFriendlyName(i) + "</li>";
+	}
+	
+	response.replace("{ip}", ipString);
+	response.replace("{lights}", lights);
+		
+	HTTP->send(200, "text/html", response);
 }
 
 void descriptionFn() {
@@ -740,7 +776,6 @@ void lightsFn(WcFnRequestHandler *handler, String requestUri, HTTPMethod method)
   }
 }
 
-
 void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler);
 void lightsIdFn(WcFnRequestHandler *whandler, String requestUri, HTTPMethod method) {
   int numberOfTheLight = atoi(whandler->getWildCard(1).c_str()) - 1;
@@ -827,6 +862,7 @@ void LightServiceClass::begin(ESP8266WebServer *svr) {
   Serial.print(":");
   Serial.println(80);
 
+  HTTP->on("/index.html", HTTP_GET, indexPageFn);
   HTTP->on("/description.xml", HTTP_GET, descriptionFn);
   on(configFn, "/api/*/config", HTTP_ANY);
   on(configFn, "/api/config", HTTP_GET);
@@ -1110,6 +1146,34 @@ bool parseHueLightInfo(HueLightInfo currentInfo, aJsonObject *parsedRoot, HueLig
   }
   return true;
 }
+void addSingleLightJson(aJsonObject* light, int numberOfTheLight, LightHandler *lightHandler) {
+  if (!lightHandler) return;
+  String lightName = "" + (String) (numberOfTheLight + 1);
+  
+  aJson.addStringToObject(light, "manufacturername", "OpenSource"); // type of lamp (all "Extended colour light" for now)
+  aJson.addStringToObject(light, "modelid", "LST001"); // the model number
+  aJson.addStringToObject(light, "name",  ("Hue LightStrips " + (String) (numberOfTheLight + 1)).c_str()); // // the name as set through the web UI or app
+  aJsonObject *state;
+  aJson.addItemToObject(light, "state", state = aJson.createObject());
+  HueLightInfo info = lightHandler->getInfo(numberOfTheLight);
+  aJson.addBooleanToObject(state, "on", info.on);
+  aJson.addNumberToObject(state, "hue", info.hue); // hs mode: the hue (expressed in ~deg*182.04)
+  aJson.addNumberToObject(state, "bri", info.brightness); // brightness between 0-254 (NB 0 is not off!)
+  aJson.addNumberToObject(state, "sat", info.saturation); // hs mode: saturation between 0-254
+  double numbers[2] = {0.0, 0.0};
+  aJson.addItemToObject(state, "xy", aJson.createFloatArray(numbers, 2)); // xy mode: CIE 1931 color co-ordinates
+  aJson.addNumberToObject(state, "ct", 500); // ct mode: color temp (expressed in mireds range 154-500)
+  aJson.addStringToObject(state, "alert", "none"); // 'select' flash the lamp once, 'lselect' repeat flash for 30s
+  aJson.addStringToObject(state, "effect", info.effect == EFFECT_COLORLOOP ? "colorloop" : "none");
+  aJson.addStringToObject(state, "colormode", "hs"); // the current color mode
+  aJson.addBooleanToObject(state, "reachable", true); // lamp can be seen by the hub  aJson.addStringToObject(root, "type", "Extended color light"); // type of lamp (all "Extended colour light" for now)
+  
+  aJson.addStringToObject(light, "swversion", "0.1"); // type of lamp (all "Extended colour light" for now)
+  aJson.addStringToObject(light, "type", "Extended color light"); // type of lamp (all "Extended colour light" for now)
+  aJson.addStringToObject(light, "uniqueid",  ((String) (numberOfTheLight + 1)).c_str());
+
+}
+
 
 void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler) {
   if (!lightHandler) return;
