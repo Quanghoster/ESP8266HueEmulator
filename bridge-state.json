@@ -1,0 +1,193 @@
+[
+
+  {
+    "mJD0QNfOV6T-2JF": {
+      "name": "S1",
+      "lights": [ "1", "2" ],
+      "owner": "api",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": "1",
+        "data": ""
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    }
+  },
+
+  //
+
+
+  {
+    "mJD0QNfOV6T-2J7": {
+      "name": "Savanna sunset",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "kbixx_r01_d15"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "jUy25zg4rdru0Zw": {
+      "name": "Arctic aurora",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "ccUro_r01_d17"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "DBO1KkEThnKbLhU": {
+      "name": "Tropical twilight",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "vbvPP_r01_d16"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "wB91lDRQF8D2f8q": {
+      "name": "Concentrate",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "awesc_r01_d03"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "R3yW88054-aspwP": {
+      "name": "Relax",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "0p7oD_r01_d01"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "YApXiIcvZFinFT6": {
+      "name": "Bright",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "tdnlI_r01_d05"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "aPMQKi3ulnqHRw1": {
+      "name": "Spring blossom",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "ZfoxY_r01_d18"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "JN0X5EuOU1ZMkGd": {
+      "name": "Energize",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "ETZdm_r01_d04"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "0BLgMNTa2WEQBvP": {
+      "name": "Read",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "E4QJv_r01_d02"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "UEvkcN7xMUW1RLm": {
+      "name": "Nightlight",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "wq3kn_r01_d07"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:15",
+      "version": 2
+    },
+    "ArmRYkZX-KtK30G": {
+      "name": "Dimmed",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "LHsVt_r01_d06"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:17:16",
+      "version": 2
+    },
+    "GOwzAc1MMkVNaGs": {
+      "name": "Loop",
+      "lights": [ "4" ],
+      "owner": "sbs7FAfNhaBqdzKFNTJGhc-DBrQB0rTwi6cYSJsY",
+      "recycle": false,
+      "locked": false,
+      "appdata": {
+        "version": 1,
+        "data": "wfHwy_r01_d99"
+      },
+      "picture": "",
+      "lastupdated": "2017-11-04T10:18:38",
+      "version": 2
+    }
+  }
+]
