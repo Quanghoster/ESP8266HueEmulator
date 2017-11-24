@@ -740,7 +740,8 @@ void lightsFn(WcFnRequestHandler *handler, String requestUri, HTTPMethod method)
   }
 }
 
-void addSingleLightJson(aJsonObject* light, int numberOfTheLight, LightHandler *lightHandler);
+
+void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler);
 void lightsIdFn(WcFnRequestHandler *whandler, String requestUri, HTTPMethod method) {
   int numberOfTheLight = atoi(whandler->getWildCard(1).c_str()) - 1;
   LightHandler *handler = LightService.getLightHandler(numberOfTheLight);
@@ -1110,16 +1111,16 @@ bool parseHueLightInfo(HueLightInfo currentInfo, aJsonObject *parsedRoot, HueLig
   return true;
 }
 
-void addSingleLightJson(aJsonObject* light, int numberOfTheLight, LightHandler *lightHandler) {
+void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler) {
   if (!lightHandler) return;
   String lightNumber = (String) (numberOfTheLight + 1);
   String lightName = lightHandler->getFriendlyName(numberOfTheLight);
   
-  aJson.addStringToObject(light, "manufacturername", "OpenSource"); // type of lamp (all "Extended colour light" for now)
-  aJson.addStringToObject(light, "modelid", "LST001"); // the model number
-  aJson.addStringToObject(light, "name",  lightName.c_str()); // // the name as set through the web UI or app
+  aJson.addStringToObject(root, "manufacturername", "OpenSource"); // type of lamp (all "Extended colour light" for now)
+  aJson.addStringToObject(root, "modelid", "LST001"); // the model number
+  aJson.addStringToObject(root, "name",  lightName.c_str()); // // the name as set through the web UI or app
   aJsonObject *state;
-  aJson.addItemToObject(light, "state", state = aJson.createObject());
+  aJson.addItemToObject(root, "state", state = aJson.createObject());
   HueLightInfo info = lightHandler->getInfo(numberOfTheLight);
   aJson.addBooleanToObject(state, "on", info.on);
   aJson.addNumberToObject(state, "hue", info.hue); // hs mode: the hue (expressed in ~deg*182.04)
@@ -1133,13 +1134,13 @@ void addSingleLightJson(aJsonObject* light, int numberOfTheLight, LightHandler *
   aJson.addStringToObject(state, "colormode", "hs"); // the current color mode
   aJson.addBooleanToObject(state, "reachable", true); // lamp can be seen by the hub  aJson.addStringToObject(root, "type", "Extended color light"); // type of lamp (all "Extended colour light" for now)
   
-  aJson.addStringToObject(light, "swversion", "0.1"); // type of lamp (all "Extended colour light" for now)
+  aJson.addStringToObject(root, "swversion", "0.1"); // type of lamp (all "Extended colour light" for now)
   if (info.bulbType == HueBulbType::DIMMABLE_LIGHT) {
-    aJson.addStringToObject(light, "type", "Dimmable light");
+    aJson.addStringToObject(root, "type", "Dimmable light");
   } else {
-    aJson.addStringToObject(light, "type", "Extended color light");
+    aJson.addStringToObject(root, "type", "Extended color light");
   }
-  aJson.addStringToObject(light, "uniqueid",  lightNumber.c_str());
+  aJson.addStringToObject(root, "uniqueid",  lightNumber.c_str());
 
 }
 
