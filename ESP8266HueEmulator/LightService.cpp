@@ -23,8 +23,8 @@ String client;
 
 
 // Group and Scene file name prefixes for SPIFFS support 
-#define GROUP_FILE_TEMPLATE "GROUP-%d.json"
-#define SCENE_FILE_TEMPLATE "SCENE-%d.json"
+String GROUP_FILE_TEMPLATE = "GROUP-%d.json";
+String SCENE_FILE_TEMPLATE = "SCENE-%d.json";
 
 
 ESP8266WebServer *HTTP;
@@ -444,12 +444,39 @@ class LightGroup {
 void on(HandlerFunction fn, const String &wcUri, HTTPMethod method, char wildcard = '*') {
   HTTP->addHandler(new WcFnRequestHandler(fn, wcUri, method, wildcard));
 }
+ 
+String listFiles(String _template)
+{
+  Serial.println(_template);
+  String response = "";
+    for (int i = 0; i < 16; i++) {
+      String fileName = _template;
+      fileName.replace("%d",String(i));
+      Serial.println(fileName);
+      
+      //sprintf(fileName,_template,i);
+      if(!SPIFFS.exists(fileName))
+        continue;
+        
+      Serial.println("Adding file to list");
+      response += "<li>" + fileName + "</li>";
+    
+      
+    }
+    return response;
+}
 
 void indexPageFn() {
 	String response = "<html><body>"
 	"<h2>Philips HUE ( {ip} )</h2>"
 	"<p>Available lights:</p>"
 	"<ul>{lights}</ul>"
+  "<ul>File Cache</ul>"
+  "<ul>Groups:</ul>"
+  "<ul>{group-files}</ul>"
+  "<ul>Scenes:</ul>"
+  "<ul>{scene-files}</ul>"
+  "<a href='/cache/clear'>Clear Cached Groups and Scenes</a>"
 	"</body></html>";
 	
 	String lights = "";
@@ -461,11 +488,32 @@ void indexPageFn() {
 	  	  
 	  lights += "<li>" + lightHandlers[i]->getFriendlyName(i) + "</li>";
 	}
-	
+  String sceneFiles = listFiles(SCENE_FILE_TEMPLATE);
+  String groupFiles = listFiles(GROUP_FILE_TEMPLATE);
 	response.replace("{ip}", ipString);
 	response.replace("{lights}", lights);
-		
+	response.replace("{group-files}", groupFiles);	
+  response.replace("{scene-files}", sceneFiles);  
 	HTTP->send(200, "text/html", response);
+}
+
+void clearFiles(String _template)
+{
+    for (int i = 0; i < 16; i++) {
+      String fileName = _template;
+      fileName.replace("%d",String(i));
+      if(SPIFFS.exists(fileName)){
+        SPIFFS.remove(fileName);   
+      }
+    }
+}
+
+// remove the group and scene cache files
+void cacheClearFn()
+{
+  clearFiles(GROUP_FILE_TEMPLATE);
+  clearFiles(SCENE_FILE_TEMPLATE);
+  indexPageFn();
 }
 
 void descriptionFn() {
@@ -776,7 +824,7 @@ void lightsFn(WcFnRequestHandler *handler, String requestUri, HTTPMethod method)
   }
 }
 
-void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler);
+void addSingleLightJson(aJsonObject* , int , LightHandler *);
 void lightsIdFn(WcFnRequestHandler *whandler, String requestUri, HTTPMethod method) {
   int numberOfTheLight = atoi(whandler->getWildCard(1).c_str()) - 1;
   LightHandler *handler = LightService.getLightHandler(numberOfTheLight);
@@ -863,6 +911,7 @@ void LightServiceClass::begin(ESP8266WebServer *svr) {
   Serial.println(80);
 
   HTTP->on("/index.html", HTTP_GET, indexPageFn);
+  HTTP->on("/cache/clear", HTTP_GET, cacheClearFn);
   HTTP->on("/description.xml", HTTP_GET, descriptionFn);
   on(configFn, "/api/*/config", HTTP_ANY);
   on(configFn, "/api/config", HTTP_GET);
@@ -1146,33 +1195,7 @@ bool parseHueLightInfo(HueLightInfo currentInfo, aJsonObject *parsedRoot, HueLig
   }
   return true;
 }
-void addSingleLightJson(aJsonObject* light, int numberOfTheLight, LightHandler *lightHandler) {
-  if (!lightHandler) return;
-  String lightName = "" + (String) (numberOfTheLight + 1);
-  
-  aJson.addStringToObject(light, "manufacturername", "OpenSource"); // type of lamp (all "Extended colour light" for now)
-  aJson.addStringToObject(light, "modelid", "LST001"); // the model number
-  aJson.addStringToObject(light, "name",  ("Hue LightStrips " + (String) (numberOfTheLight + 1)).c_str()); // // the name as set through the web UI or app
-  aJsonObject *state;
-  aJson.addItemToObject(light, "state", state = aJson.createObject());
-  HueLightInfo info = lightHandler->getInfo(numberOfTheLight);
-  aJson.addBooleanToObject(state, "on", info.on);
-  aJson.addNumberToObject(state, "hue", info.hue); // hs mode: the hue (expressed in ~deg*182.04)
-  aJson.addNumberToObject(state, "bri", info.brightness); // brightness between 0-254 (NB 0 is not off!)
-  aJson.addNumberToObject(state, "sat", info.saturation); // hs mode: saturation between 0-254
-  double numbers[2] = {0.0, 0.0};
-  aJson.addItemToObject(state, "xy", aJson.createFloatArray(numbers, 2)); // xy mode: CIE 1931 color co-ordinates
-  aJson.addNumberToObject(state, "ct", 500); // ct mode: color temp (expressed in mireds range 154-500)
-  aJson.addStringToObject(state, "alert", "none"); // 'select' flash the lamp once, 'lselect' repeat flash for 30s
-  aJson.addStringToObject(state, "effect", info.effect == EFFECT_COLORLOOP ? "colorloop" : "none");
-  aJson.addStringToObject(state, "colormode", "hs"); // the current color mode
-  aJson.addBooleanToObject(state, "reachable", true); // lamp can be seen by the hub  aJson.addStringToObject(root, "type", "Extended color light"); // type of lamp (all "Extended colour light" for now)
-  
-  aJson.addStringToObject(light, "swversion", "0.1"); // type of lamp (all "Extended colour light" for now)
-  aJson.addStringToObject(light, "type", "Extended color light"); // type of lamp (all "Extended colour light" for now)
-  aJson.addStringToObject(light, "uniqueid",  ((String) (numberOfTheLight + 1)).c_str());
 
-}
 
 
 void addSingleLightJson(aJsonObject* root, int numberOfTheLight, LightHandler *lightHandler) {
@@ -1354,8 +1377,8 @@ void  initializeGroupSlots()
 {
   Serial.println("initializeGroupSlots()");
   for (int i = 0; i < 16; i++) {
-    char fileName[20];
-    sprintf(fileName,GROUP_FILE_TEMPLATE,i);
+    String fileName = GROUP_FILE_TEMPLATE;
+    fileName.replace("%d",String(i));
     //Serial.print("Testing for ");Serial.println(fileName);
     if (SPIFFS.exists(fileName)) {   
       // read the file into the groupslot position
@@ -1391,8 +1414,8 @@ void  initializeSceneSlots()
 {
   Serial.println("initializeSceneSlots()");
   for (int i = 0; i < 16; i++) {
-    char fileName[20];
-    sprintf(fileName,SCENE_FILE_TEMPLATE,i);
+    String fileName = SCENE_FILE_TEMPLATE;
+    fileName.replace("%d",String(i));
     //Serial.print("Testing for ");Serial.println(fileName);
     if (SPIFFS.exists(fileName)) {   
       // read the file into the groupslot position
@@ -1424,8 +1447,8 @@ void  initializeSceneSlots()
 
 // returns true on failure
 bool updateGroupSlot(int slot, String body) {
-  char fileName[20];
-  sprintf(fileName,GROUP_FILE_TEMPLATE,slot);
+  String fileName = GROUP_FILE_TEMPLATE;
+  fileName.replace("%d",String(slot));
   
   aJsonObject *root;
   if (body != "") {
@@ -1525,8 +1548,8 @@ bool updateSceneSlot(int slot, String id, String body) {
     return true;
   }
   if (lightScenes[slot]) {
-    char fileName[20];
-    sprintf(fileName,SCENE_FILE_TEMPLATE,slot);
+    String fileName = SCENE_FILE_TEMPLATE;
+    fileName.replace("%d",String(slot));
     delete lightScenes[slot];
     lightScenes[slot] = nullptr;
     if(SPIFFS.exists(fileName)){
@@ -1590,8 +1613,8 @@ String scenePutHandler(String id) {
     sendJson(root);
     
     // now save to file
-    char fileName[20];
-    sprintf(fileName,SCENE_FILE_TEMPLATE,sceneIndex);
+    String fileName = SCENE_FILE_TEMPLATE;
+    fileName.replace("%d",String(sceneIndex));
     Serial.print("Updating Scene ");Serial.print(id);Serial.println(fileName);
     File f = SPIFFS.open(fileName,"w");
     char* json = aJson.print(lightScenes[sceneIndex]->getSceneJson(true));
@@ -1620,8 +1643,8 @@ void sceneCreationHandler(String id) {
     lightScenes[sceneIndex]->id = id;
     sendSuccess("id", id);
     // now save to file
-    char fileName[20];
-    sprintf(fileName,SCENE_FILE_TEMPLATE,sceneIndex);
+    String fileName = SCENE_FILE_TEMPLATE;
+    fileName.replace("%d",String(sceneIndex));
     Serial.print("Updating Scene ");Serial.print(id);Serial.println(fileName);
     File f = SPIFFS.open(fileName,"w");
     char* json = aJson.print(lightScenes[sceneIndex]->getSceneJson(true));
